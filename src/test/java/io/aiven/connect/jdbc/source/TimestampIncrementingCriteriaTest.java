@@ -53,7 +53,7 @@ public class TimestampIncrementingCriteriaTest {
     private TimestampIncrementingCriteria criteriaIncTs;
     private Schema schema;
     private Struct record;
-    private TimeZone utcTimeZone = TimeZone.getTimeZone(ZoneOffset.UTC);
+    private final TimeZone utcTimeZone = TimeZone.getTimeZone(ZoneOffset.UTC);
 
     @BeforeEach
     public void beforeEach() {
@@ -64,7 +64,7 @@ public class TimestampIncrementingCriteriaTest {
     }
 
     protected void assertExtractedOffset(final long expected, final Schema schema, final Struct record) {
-        TimestampIncrementingCriteria criteria = null;
+        final TimestampIncrementingCriteria criteria;
         if (schema.field(INCREMENTING_COLUMN.name()) != null) {
             if (schema.field(TS1_COLUMN.name()) != null) {
                 criteria = criteriaIncTs;

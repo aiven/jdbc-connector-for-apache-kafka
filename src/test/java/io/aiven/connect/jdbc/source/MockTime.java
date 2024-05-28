@@ -26,7 +26,7 @@ import org.apache.kafka.common.utils.Time;
  */
 public class MockTime implements Time {
 
-    private long nanos = 0;
+    private long nanos;
     private long autoTickMs = 0;
 
     public MockTime() {
