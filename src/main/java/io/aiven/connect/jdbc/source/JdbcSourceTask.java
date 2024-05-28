@@ -56,11 +56,11 @@ public class JdbcSourceTask extends SourceTask {
 
     private static final Logger log = LoggerFactory.getLogger(JdbcSourceTask.class);
 
-    private Time time;
+    private final Time time;
     private JdbcSourceTaskConfig config;
     private DatabaseDialect dialect;
     private CachedConnectionProvider cachedConnectionProvider;
-    private PriorityQueue<TableQuerier> tableQueue = new PriorityQueue<TableQuerier>();
+    private final PriorityQueue<TableQuerier> tableQueue = new PriorityQueue<>();
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     public JdbcSourceTask() {
@@ -306,8 +306,7 @@ public class JdbcSourceTask extends SourceTask {
                 final long untilNext = nextUpdate - time.milliseconds();
                 final long sleepMs = Math.min(untilNext, 100);
                 if (sleepMs > 0) {
-                    log.trace("Waiting {} ms to poll {} next ({} ms total left to wait)",
-                        sleepMs, querier.toString(), untilNext);
+                    log.trace("Waiting {} ms to poll {} next ({} ms total left to wait)", sleepMs, querier, untilNext);
                     time.sleep(sleepMs);
                     continue; // Re-check stop flag before continuing
                 }
@@ -315,7 +314,7 @@ public class JdbcSourceTask extends SourceTask {
 
             final List<SourceRecord> results = new ArrayList<>();
             try {
-                log.debug("Checking for next block of results from {}", querier.toString());
+                log.debug("Checking for next block of results from {}", querier);
                 querier.maybeStartQuery(cachedConnectionProvider.getConnection());
 
                 final int batchMaxRows = config.getInt(JdbcSourceTaskConfig.BATCH_MAX_ROWS_CONFIG);
@@ -331,14 +330,14 @@ public class JdbcSourceTask extends SourceTask {
                 }
 
                 if (results.isEmpty()) {
-                    log.trace("No updates for {}", querier.toString());
+                    log.trace("No updates for {}", querier);
                     continue;
                 }
 
-                log.debug("Returning {} records for {}", results.size(), querier.toString());
+                log.debug("Returning {} records for {}", results.size(), querier);
                 return results;
             } catch (final SQLException sqle) {
-                log.error("Failed to run query for table {}: {}", querier.toString(), sqle);
+                log.error("Failed to run query for table {}: {}", querier, sqle);
                 resetAndRequeueHead(querier);
                 return null;
             } catch (final Throwable t) {
@@ -359,7 +358,7 @@ public class JdbcSourceTask extends SourceTask {
     }
 
     private void resetAndRequeueHead(final TableQuerier expectedHead) {
-        log.debug("Resetting querier {}", expectedHead.toString());
+        log.debug("Resetting querier {}", expectedHead);
         final TableQuerier removedQuerier = tableQueue.poll();
         assert removedQuerier == expectedHead;
         expectedHead.reset(time.milliseconds());
