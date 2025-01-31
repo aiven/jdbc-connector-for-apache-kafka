@@ -510,6 +510,7 @@ public class JdbcSinkConfig extends JdbcConfig {
                 validateKafkaPKFields(pkFieldsConfigValue, pkFields);
                 break;
             case "record_key":
+                break;
             case "record_value":
                 validatePKFieldsRequired(pkFieldsConfigValue, pkFields);
                 break;
@@ -539,7 +540,7 @@ public class JdbcSinkConfig extends JdbcConfig {
     private static void validatePKFieldsRequired(final ConfigValue pkFieldsConfigValue, final List<String> pkFields) {
         if (pkFields == null || pkFields.isEmpty()) {
             pkFieldsConfigValue.addErrorMessage(
-                    "Primary key fields must be set when pkMode is 'record_key' or 'record_value'."
+                    "Primary key fields must be set when pkMode is 'record_value'."
             );
         }
     }
